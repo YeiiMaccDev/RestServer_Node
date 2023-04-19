@@ -8,8 +8,12 @@ const getUsers = (req, res = response) => {
 }
 
 const postUsers = (req, res = response) => {
+    const {name, age} = req.body;
+
     res.json({
-        message: 'Post API - Controller'
+        message: 'Post API - Controller',
+        name,
+        age
     });
 }
 

@@ -9,9 +9,6 @@ class Server {
         this.port = process.env.PORT || 8080;
         this.usersPath = '/api/users';
 
-        // CORS
-        this.app.use(cors());
-
         // Middleware
         this.middlewares();
 
@@ -20,6 +17,13 @@ class Server {
     }
 
     middlewares () {
+
+        // CORS
+        this.app.use(cors());
+
+        // Reading and parsing of received data.
+        this.app.use( express.json() );
+
         // Public directory
         this.app.use(express.static('public'))
     }
