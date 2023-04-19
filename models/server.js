@@ -7,6 +7,8 @@ class Server {
     constructor() {
         this.app = express();
         this.port = process.env.PORT || 8080;
+        this.usersPath = '/api/users';
+
         // CORS
         this.app.use(cors());
 
@@ -24,30 +26,9 @@ class Server {
 
 
     routes() {
-        this.app.get('/api', (req, res) => {
-            res.json({
-                message: 'Get API'
-            })
-        })
-
-        this.app.post('/api', (req, res) => {
-            res.json({
-                message: 'Post API'
-            })
-        })
-
-        this.app.put('/api', (req, res) => {
-            res.json({
-                message: 'Put API'
-            })
-        })
-
-        this.app.delete('/api', (req, res) => {
-            res.json({
-                message: 'Delete API'
-            })
-        })
+        this.app.use(this.usersPath, require('../routes/user'))
     }
+
 
     listen () {
         this.app.listen( this.port, () => {
