@@ -7,11 +7,19 @@ const getUsers = async(req = request, res = response) => {
     // const { query, name, apikey, page = 1, limit = 10 } = req.query;
 
     const { offset = 0, limit = 10 } = req.query;
-    const users = await User.find()
+    const queryStatus = { status: true };
+
+    const [totalUsers, users] = await Promise.all([
+        User.countDocuments(queryStatus),
+        User.find(queryStatus)
         .skip(Number(offset))
-        .limit(Number(limit));
+        .limit(Number(limit))
+    ]);
+
+    
     res.json({
         message: 'Get API - Controller',
+        totalUsers,
         users
     });
 }
