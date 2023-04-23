@@ -3,16 +3,16 @@ const bcryptjs = require('bcryptjs');
 
 const User = require('../models/user');
 
-const getUsers = (req = request, res = response) => {
-    const { query, name, apikey, page = 1, limit = 10 } = req.query;
+const getUsers = async(req = request, res = response) => {
+    // const { query, name, apikey, page = 1, limit = 10 } = req.query;
 
+    const { offset = 0, limit = 10 } = req.query;
+    const users = await User.find()
+        .skip(Number(offset))
+        .limit(Number(limit));
     res.json({
         message: 'Get API - Controller',
-        query,
-        name,
-        apikey,
-        page,
-        limit
+        users
     });
 }
 
