@@ -21,14 +21,6 @@ const postUsers = async(req, res = response) => {
     const {name, email, password, role} = req.body;
     const user = new User({name, email, password, role});
 
-    // Check if the email exists
-    const existsEmail = await User.findOne({email});
-
-    if (existsEmail) {
-        return res.status(400).json({
-            message: 'El correo ya está registrado.'
-        });    
-    }
 
     // Encrypt password
     const salt = bcryptjs.genSaltSync();
