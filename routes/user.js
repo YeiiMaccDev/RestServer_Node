@@ -16,7 +16,7 @@ router.get('/', getUsers);
 router.post('/', [
     check('name', 'El nombre es obligatorio.').not().isEmpty(),
     check('password', 'La contraseña es obligatoria.').not().isEmpty(),
-    check('password', 'La contraseña debe tener más de 6 letras.').isLength({ min:6 }),
+    check('password', 'La contraseña debe tener más de 6 letras.').isLength({ min: 6 }),
     check('email', 'El email es obligatorio.').not().isEmpty(),
     check('email', 'El email no es válido.').isEmail(),
     check('email').custom(existsEmail),
@@ -27,13 +27,19 @@ router.post('/', [
 
 router.put('/:id', [
     check('id', 'No es un ID válido').isMongoId(),
+    validateFields,
     check('id').custom(existsUserById),
     check('role').custom(isValidRole),
     validateFields
 ], putUsers);
 
-router.patch('/', patchUsers);
+router.patch('/:id', patchUsers);
 
-router.delete('/', deleteUsers);
+router.delete('/:id', [
+    check('id', 'No es un ID válido').isMongoId(),
+    validateFields,
+    check('id').custom(existsUserById),
+    validateFields
+], deleteUsers);
 
 module.exports = router;

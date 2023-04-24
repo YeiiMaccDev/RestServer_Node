@@ -15,10 +15,8 @@ const getUsers = async(req = request, res = response) => {
         .skip(Number(offset))
         .limit(Number(limit))
     ]);
-
     
     res.json({
-        message: 'Get API - Controller',
         totalUsers,
         users
     });
@@ -37,10 +35,7 @@ const postUsers = async (req, res = response) => {
     // Save to DB
     await user.save();
 
-    res.json({
-        message: 'Post API - Controller',
-        user
-    });
+    res.json(user);
 }
 
 const putUsers = async(req, res = response) => {
@@ -56,10 +51,7 @@ const putUsers = async(req, res = response) => {
 
     const user = await User.findByIdAndUpdate(id, data, {new: true} );
 
-    res.json({
-        message: 'Put API - Controller...',
-        user,
-    });
+    res.json(user);
 }
 
 const patchUsers = (req, res = response) => {
@@ -68,10 +60,12 @@ const patchUsers = (req, res = response) => {
     });
 }
 
-const deleteUsers = (req, res = response) => {
-    res.json({
-        message: 'Delete API - Controller'
-    });
+const deleteUsers = async(req, res = response) => {
+
+    const { id } = req.params;
+    const user = await User.findByIdAndUpdate( id, {status: false}, {new: true} );
+
+    res.json(user);
 }
 
 
