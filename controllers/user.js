@@ -63,11 +63,12 @@ const patchUsers = (req, res = response) => {
 const deleteUsers = async(req, res = response) => {
 
     const { id } = req.params;
-    const uid = req.uid;
 
     const user = await User.findByIdAndUpdate( id, {status: false}, {new: true} );
 
-    res.json({user, uid});
+    const authenticatedUser = req.authenticatedUser;
+
+    res.json({user, authenticatedUser});
 }
 
 
