@@ -5,13 +5,19 @@ const { getUsers,
     postUsers,
     putUsers,
     patchUsers,
-    deleteUsers } = require('../controllers/user');
+    deleteUsers
+} = require('../controllers/user');
 
-const { validateFields } = require('../middlewares/validate-fields');
-const { validateJWT } = require('../middlewares/validate-jwt');
-const { isAdminRole, isRole } = require('../middlewares/validate-roles');
+const { validateFields,
+    validateJWT,
+    isAdminRole,
+    isRole
+} = require('../middlewares');
 
-const { isValidRole, existsEmail, existsUserById } = require('../helpers/db-validators');
+const { isValidRole,
+    existsEmail,
+    existsUserById
+} = require('../helpers/db-validators');
 
 
 const router = Router();
