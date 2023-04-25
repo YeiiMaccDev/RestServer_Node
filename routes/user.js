@@ -9,7 +9,7 @@ const { getUsers,
 
 const { validateFields } = require('../middlewares/validate-fields');
 const { validateJWT } = require('../middlewares/validate-jwt');
-const { isAdminRole } = require('../middlewares/validate-roles');
+const { isAdminRole, isRole } = require('../middlewares/validate-roles');
 
 const { isValidRole, existsEmail, existsUserById } = require('../helpers/db-validators');
 
@@ -42,7 +42,8 @@ router.patch('/:id', patchUsers);
 
 router.delete('/:id', [
     validateJWT,
-    isAdminRole,
+    // isAdminRole,
+    isRole('ADMIN_ROLE', 'SALES_ROLE'),
     check('id', 'No es un ID válido').isMongoId(),
     validateFields,
     check('id').custom(existsUserById),
