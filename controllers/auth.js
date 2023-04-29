@@ -3,7 +3,7 @@ const bcryptjs = require("bcryptjs");
 
 const User = require("../models/user");
 const { generateJWT } = require("../helpers/generateJWT");
-const { googleVerify } = require("../helpers/google-verify,js");
+const { googleVerify } = require("../helpers/google-verify");
 
 
 
