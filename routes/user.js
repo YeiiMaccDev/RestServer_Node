@@ -22,6 +22,11 @@ const { isValidRole,
 
 const router = Router();
 
+
+/**
+ * {{url}}/api/users
+ */
+
 router.get('/', getUsers);
 
 router.post('/', [
