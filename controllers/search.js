@@ -16,6 +16,26 @@ const collectionsLicensed = [
     'users',
 ];
 
+
+const searchCategories = async (query = '', res = response) => {
+    const isMongoId = isValidObjectId(query);
+
+    if (isMongoId) {
+        const category = await Category.findById(query);
+        return res.json({
+            results: (category) ? [category] : []
+        });
+    }
+
+    const regex = new RegExp(query, 'i');
+
+    const category = await Category.find({ name: regex, status: true });
+
+    res.json({
+        results: category
+    });
+}
+
 const searchUser = async (query = '', res = response) => {
     const isMongoId = isValidObjectId(query);
 
@@ -49,7 +69,7 @@ const search = async (req = request, res = response) => {
 
     switch (collection) {
         case 'categories':
-
+            searchCategories(query, res);
             break;
         case 'products':
 
