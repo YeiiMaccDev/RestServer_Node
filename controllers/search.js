@@ -36,6 +36,31 @@ const searchCategories = async (query = '', res = response) => {
     });
 }
 
+
+const searchProducts = async (query = '', res = response) => {
+    const isMongoId = isValidObjectId(query);
+
+    if (isMongoId) {
+        const product = await Product.findById(query)
+            .populate('category', 'name');
+        return res.json({
+            results: (product) ? [product] : []
+        });
+    }
+
+    const regex = new RegExp(query, 'i');
+
+    const products = await Product.find({ 
+        $or: [{ name: regex }, { description: regex }],
+        $and: [{ status: true }]
+     })
+        .populate('category', 'name');;
+
+    res.json({
+        results: products
+    });
+}
+
 const searchUser = async (query = '', res = response) => {
     const isMongoId = isValidObjectId(query);
 
@@ -49,7 +74,7 @@ const searchUser = async (query = '', res = response) => {
     const regex = new RegExp(query, 'i');
 
     const users = await User.find({
-        $or : [{name: regex}, {email: regex}],
+        $or: [{ name: regex }, { email: regex }],
         $and: [{ status: true }]
     });
 
@@ -72,7 +97,7 @@ const search = async (req = request, res = response) => {
             searchCategories(query, res);
             break;
         case 'products':
-
+            searchProducts(query, res);
             break;
         case 'users':
             searchUser(query, res);

@@ -35,9 +35,10 @@ const getProductById = async (req = request, res = response) => {
 
 
 const createProduct = async (req = request, res = response) => {
-    const { status, user, name, ...body } = req.body;
+    const { status, user, name , ...body } = req.body;
+    const nameUpperCase = name.toUpperCase();
 
-    const existsProduct = await Product.findOne({ name });
+    const existsProduct = await Product.findOne({ name: nameUpperCase });
 
     if (existsProduct) {
         return res.status(400).json({
@@ -46,7 +47,7 @@ const createProduct = async (req = request, res = response) => {
     }
 
     const data = {
-        name: name.toUpperCase(),
+        name: nameUpperCase,
         user: req.authenticatedUser._id,
         ...body
     }
