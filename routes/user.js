@@ -5,7 +5,8 @@ const { getUsers,
     postUsers,
     putUsers,
     patchUsers,
-    deleteUsers
+    deleteUsers,
+    getUserById
 } = require('../controllers/user');
 
 const { validateFields,
@@ -28,6 +29,13 @@ const router = Router();
  */
 
 router.get('/', getUsers);
+
+router.get('/:id', [
+    check('id', 'No es un ID válido.').isMongoId(),
+    validateFields,
+    check('id').custom(existsUserById),
+    validateFields
+], getUserById);
 
 router.post('/', [
     check('name', 'El nombre es obligatorio.').not().isEmpty(),

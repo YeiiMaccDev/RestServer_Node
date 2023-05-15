@@ -22,6 +22,14 @@ const getUsers = async(req = request, res = response) => {
     });
 }
 
+const getUserById = async (req = request, res = response) => {
+    const { id } = req.params;
+
+    const product = await User.findById(id);
+
+    res.json(product);
+}
+
 const postUsers = async (req, res = response) => {
 
     const { name, email, password, role } = req.body;
@@ -74,6 +82,7 @@ const deleteUsers = async(req, res = response) => {
 
 module.exports = {
     getUsers,
+    getUserById,
     postUsers,
     putUsers,
     patchUsers,
