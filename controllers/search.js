@@ -12,6 +12,7 @@ const {
 const collectionsLicensed = [
     'categories',
     'products',
+    'productsByCategory',
     'roles',
     'users',
 ];
@@ -50,14 +51,39 @@ const searchProducts = async (query = '', res = response) => {
 
     const regex = new RegExp(query, 'i');
 
-    const products = await Product.find({ 
+    const products = await Product.find({
         $or: [{ name: regex }, { description: regex }],
         $and: [{ status: true }]
-     })
+    })
         .populate('category', 'name');;
 
     res.json({
         results: products
+    });
+}
+
+const searchProductsByCategory = async (query = '', res = response) => {
+    const isMongoId = isValidObjectId(query);
+    let category = '';
+
+    if (isMongoId) {
+        category = await Category.findById(query);
+    } else {
+        const regex = new RegExp(query, 'i');
+        category = await Category.findOne({ name: regex, status: true });
+    }
+
+    if (category) {
+        const products = await Product.find({ category: category._id, status: true })
+            .populate('category', 'name');;
+
+        return res.json({
+            results: products
+        });
+    } 
+
+    res.json({
+        results: []
     });
 }
 
@@ -98,6 +124,9 @@ const search = async (req = request, res = response) => {
             break;
         case 'products':
             searchProducts(query, res);
+            break;
+        case 'productsByCategory':
+            searchProductsByCategory(query, res);
             break;
         case 'users':
             searchUser(query, res);
