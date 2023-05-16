@@ -9,21 +9,36 @@ const uploadFiles = (req = request, res = response) => {
         });
     }
 
-    console.log('req.files >>>', req.files); // eslint-disable-line
-
     const { file } = req.files;
 
-    const uploadPath = path.join( __dirname, '../uploads/', file.name);
+    const nameCutout = file.name.split('.');
+    const extension = nameCutout[ nameCutout.length - 1 ];
 
-    file.mv(uploadPath, (err) => {
-        if (err) {
-            return res.status(500).json({err});
-        }
-
-        res.json({
-            message: 'File uploaded to ' + uploadPath
+    // Validating file extensions.
+    const extensionsValid = ['png', 'jpg', 'jpeg'];
+     if ( ! extensionsValid.includes(extension) ) {
+        return res.status(400).json({
+            message: `Invalid file extension: ${extension}  . Extensions valid : ${extensionsValid}.`
         });
-    });
+     }
+
+    console.log(file)
+
+    res.json({
+        extension
+    })
+
+    // const uploadPath = path.join( __dirname, '../uploads/', file.name);
+
+    // file.mv(uploadPath, (err) => {
+    //     if (err) {
+    //         return res.status(500).json({err});
+    //     }
+
+    //     res.json({
+    //         message: 'File uploaded to ' + uploadPath
+    //     });
+    // });
 }
 
 module.exports = {
