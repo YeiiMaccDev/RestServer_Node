@@ -1,4 +1,5 @@
 const { request, response } = require("express");
+const { v4: uuidv4 } = require('uuid');
 const path = require("path");
 
 const uploadFiles = (req = request, res = response) => {
@@ -12,33 +13,29 @@ const uploadFiles = (req = request, res = response) => {
     const { file } = req.files;
 
     const nameCutout = file.name.split('.');
-    const extension = nameCutout[ nameCutout.length - 1 ];
+    const extension = nameCutout[nameCutout.length - 1];
 
     // Validating file extensions.
     const extensionsValid = ['png', 'jpg', 'jpeg'];
-     if ( ! extensionsValid.includes(extension) ) {
+    if (!extensionsValid.includes(extension)) {
         return res.status(400).json({
             message: `Invalid file extension: ${extension}  . Extensions valid : ${extensionsValid}.`
         });
-     }
+    }
 
-    console.log(file)
+    const nameTemp = uuidv4() + '.' + extension;
 
-    res.json({
-        extension
-    })
+    const uploadPath = path.join( __dirname, '../uploads/', nameTemp);
 
-    // const uploadPath = path.join( __dirname, '../uploads/', file.name);
+    file.mv(uploadPath, (err) => {
+        if (err) {
+            return res.status(500).json({err});
+        }
 
-    // file.mv(uploadPath, (err) => {
-    //     if (err) {
-    //         return res.status(500).json({err});
-    //     }
-
-    //     res.json({
-    //         message: 'File uploaded to ' + uploadPath
-    //     });
-    // });
+        res.json({
+            message: 'File uploaded to ' + uploadPath
+        });
+    });
 }
 
 module.exports = {
