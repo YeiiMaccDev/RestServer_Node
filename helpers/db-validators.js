@@ -1,8 +1,8 @@
-const { 
-    Category, 
+const {
+    Category,
     Product,
     Role,
-    User 
+    User
 } = require('../models');
 
 const isValidRole = async (role = '') => {
@@ -12,7 +12,7 @@ const isValidRole = async (role = '') => {
     }
 }
 
-const existsEmail = async(email = '') => {
+const existsEmail = async (email = '') => {
     const exists = await User.findOne({ email });
 
     if (exists) {
@@ -21,30 +21,42 @@ const existsEmail = async(email = '') => {
 }
 
 
-const existsUserById = async(id = '') => {
+const existsUserById = async (id = '') => {
     const existsUser = await User.findById(id);
 
-    if ( !existsUser ) {
+    if (!existsUser) {
         throw new Error(`El id ' ${id} ' no está registrado.`);
     }
 }
 
 
-const existsCategoryById = async(id = '') => {
+const existsCategoryById = async (id = '') => {
     const existsCategory = await Category.findById(id);
 
-    if ( !existsCategory ) {
+    if (!existsCategory) {
         throw new Error(`El id ' ${id} ' no está registrado.`);
     }
 }
 
 
-const existsProductById = async(id = '') => {
+const existsProductById = async (id = '') => {
     const existsProduct = await Product.findById(id);
 
-    if ( !existsProduct ) {
+    if (!existsProduct) {
         throw new Error(`El id ' ${id} ' no está registrado.`);
     }
+}
+
+/**
+ * Validate authorized collections.
+ */
+
+const collectionsAuthorized = (collection = '', collections= []) => {
+    const isIncluded  = collections.includes(collection);
+    if ( !isIncluded ) {
+        throw new Error(`Colección (${collection}) no está autorizada, Autorizadas: ${collections}`);
+    }
+    return true;
 }
 
 
@@ -53,5 +65,6 @@ module.exports = {
     existsEmail,
     existsCategoryById,
     existsProductById,
-    existsUserById
+    existsUserById,
+    collectionsAuthorized
 }

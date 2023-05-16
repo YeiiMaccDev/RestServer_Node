@@ -9,7 +9,7 @@ const {
 } = require("../models");
 
 
-const collectionsLicensed = [
+const collectionsAuthorized = [
     'categories',
     'products',
     'productsByCategory',
@@ -112,9 +112,9 @@ const searchUser = async (query = '', res = response) => {
 const search = async (req = request, res = response) => {
     const { collection, query } = req.params;
 
-    if (!collectionsLicensed.includes(collection)) {
+    if (!collectionsAuthorized .includes(collection)) {
         return res.status(400).json({
-            message: `Calecciones permitidas: ${collectionsLicensed}`
+            message: `Calecciones permitidas: ${collectionsAuthorized }`
         });
     }
 
