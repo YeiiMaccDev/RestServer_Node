@@ -17,8 +17,6 @@ const uploadsFiles = (files, extensionsValid = ['png', 'jpg', 'jpeg'], folderNam
 
         const uploadPath = path.join(__dirname, '../uploads/', folderName, nameTemp);
 
-        console.log({folderName})
-        console.log({extensionsValid})
 
         file.mv(uploadPath, (err) => {
             if (err) {
