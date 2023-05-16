@@ -9,15 +9,16 @@ const uploadFiles = async (req = request, res = response) => {
                 message: 'No se ha cargado ningún archivo.'
             });
         }
-        const name = await uploadsFiles(req.files);
+        // txt, md
+        // const name = await uploadsFiles(req.files, ['txt', 'md'], 'texts');
+        const name = await uploadsFiles(req.files, undefined, 'imgs');
 
         res.json(name);
     } catch (error) {
-        res.status(500).json({
+        res.status(400).json({
             message: error
         });
     }
-
 
 }
 
