@@ -1,10 +1,11 @@
 const path = require("path");
 const fs = require("fs");
+const { request, response } = require("express");
 
 const cloudinary = require('cloudinary').v2;
 cloudinary.config( process.env.CLOUDINARY_URL);
+const cloudinaryFolder =  process.env.CLOUDINARY_FOLDER
 
-const { request, response } = require("express");
 
 const { uploadsFiles } = require("../helpers");
 const { User, Product } = require("../models");
@@ -100,11 +101,13 @@ const updateImageCloudinary = async (req = request, res = response) => {
 
     //  Delete previous images
     if (model.img) {
-        
+        const name = model.img.split('/').pop();
+        const [public_id] = name.split('.');
+        cloudinary.uploader.destroy(`${cloudinaryFolder}/${collection}/${public_id}`);
     }
 
     const { tempFilePath } = req.files.file;
-    const { secure_url } = await cloudinary.uploader.upload(tempFilePath, {folder:`RestServer NodeJs/${collection}`});
+    const { secure_url } = await cloudinary.uploader.upload(tempFilePath, {folder:`${cloudinaryFolder}/${collection}`});
     model.img = secure_url;
     await model.save();
 
