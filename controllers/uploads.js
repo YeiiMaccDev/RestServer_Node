@@ -102,8 +102,12 @@ const getImage = async(req = request, res = response) => {
         }
     }
 
+    const pathImg = path.join(__dirname, '../assets/no-image.png');
+    if (fs.existsSync(pathImg)) {
+        return res.sendFile( pathImg );
+    }
 
-    res.json({
+    res.status(500).json({
         message: 'Image not found.'
     });
 
