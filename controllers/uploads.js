@@ -1,3 +1,6 @@
+const path = require("path");
+const fs = require("fs");
+
 const { request, response } = require("express");
 
 const { uploadsFiles } = require("../helpers");
@@ -22,43 +25,45 @@ const updateImage = async (req = request, res = response) => {
     const { id, collection } = req.params;
     let model;
 
-    try {
-        switch (collection) {
-            case 'users':
-                model = await User.findById(id);
-                if (!model) {
-                    return res.status(400).json({
-                        message: `No existe un usuario con el id ${id}`
-                    });
-                }
-                break;
-
-            case 'products':
-                model = await Product.findById(id);
-                if (!model) {
-                    return res.status(400).json({
-                        message: `No existe un producto con el id ${id}`
-                    });
-                }
-                break;
-
-            default:
-                return res.status(500).json({
-                    message: `Olvidé hacer ${key} uploads`
+    switch (collection) {
+        case 'users':
+            model = await User.findById(id);
+            if (!model) {
+                return res.status(400).json({
+                    message: `No existe un usuario con el id ${id}`
                 });
-        }
+            }
+            break;
 
-        const nameFile = await uploadsFiles(req.files, undefined, collection);
-        model.img = nameFile;
-        await model.save();
+        case 'products':
+            model = await Product.findById(id);
+            if (!model) {
+                return res.status(400).json({
+                    message: `No existe un producto con el id ${id}`
+                });
+            }
+            break;
 
-        res.json(model);
-
-    } catch (error) {
-        res.status(400).json({
-            message: error
-        });
+        default:
+            return res.status(500).json({
+                message: `Olvidé hacer ${key} uploads`
+            });
     }
+
+    //  Delete previous images
+    if (model.img) {
+        const pathImg = path.join(__dirname, '../uploads', collection, model.img);
+        if (fs.existsSync(pathImg)) {
+            fs.unlinkSync(pathImg);
+        }
+    }
+
+    const nameFile = await uploadsFiles(req.files, undefined, collection);
+    model.img = nameFile;
+    await model.save();
+
+    res.json(model);
+
 }
 
 module.exports = {
