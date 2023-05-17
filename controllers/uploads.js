@@ -1,6 +1,9 @@
 const path = require("path");
 const fs = require("fs");
 
+const cloudinary = require('cloudinary').v2;
+cloudinary.config( process.env.CLOUDINARY_URL);
+
 const { request, response } = require("express");
 
 const { uploadsFiles } = require("../helpers");
@@ -66,6 +69,49 @@ const updateImage = async (req = request, res = response) => {
 
 }
 
+const updateImageCloudinary = async (req = request, res = response) => {
+    const { id, collection } = req.params;
+    let model;
+
+    switch (collection) {
+        case 'users':
+            model = await User.findById(id);
+            if (!model) {
+                return res.status(400).json({
+                    message: `No existe un usuario con el id ${id}`
+                });
+            }
+            break;
+
+        case 'products':
+            model = await Product.findById(id);
+            if (!model) {
+                return res.status(400).json({
+                    message: `No existe un producto con el id ${id}`
+                });
+            }
+            break;
+
+        default:
+            return res.status(500).json({
+                message: `Olvidé hacer ${key} uploads`
+            });
+    }
+
+    //  Delete previous images
+    if (model.img) {
+        
+    }
+
+    const { tempFilePath } = req.files.file;
+    const { secure_url } = await cloudinary.uploader.upload(tempFilePath, {folder:`RestServer NodeJs/${collection}`});
+    model.img = secure_url;
+    await model.save();
+
+    res.json(model);
+
+}
+
 const getImage = async(req = request, res = response) => {
     const { id, collection } = req.params;
     let model;
@@ -116,5 +162,6 @@ const getImage = async(req = request, res = response) => {
 module.exports = {
     uploadFiles,
     updateImage,
-    getImage
+    updateImageCloudinary,
+    getImage,
 }
