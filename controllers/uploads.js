@@ -7,7 +7,7 @@ cloudinary.config( process.env.CLOUDINARY_URL);
 const cloudinaryFolder =  process.env.CLOUDINARY_FOLDER
 
 
-const { uploadsFiles } = require("../helpers");
+const { uploadsFiles, isValidFileFormat } = require("../helpers");
 const { User, Product } = require("../models");
 
 const uploadFiles = async (req = request, res = response) => {
@@ -71,6 +71,13 @@ const updateImage = async (req = request, res = response) => {
 }
 
 const updateImageCloudinary = async (req = request, res = response) => {
+    const { isValid, message } = isValidFileFormat(req.files.file);
+    if ( !isValid ) {
+        return res.status(400).json({
+            message 
+        });
+    }
+   
     const { id, collection } = req.params;
     let model;
 
@@ -98,6 +105,7 @@ const updateImageCloudinary = async (req = request, res = response) => {
                 message: `Olvidé hacer ${key} uploads`
             });
     }
+
 
     //  Delete previous images
     if (model.img) {
