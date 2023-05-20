@@ -2,12 +2,10 @@ const path = require("path");
 const fs = require("fs");
 const { request, response } = require("express");
 
-const cloudinary = require('cloudinary').v2;
-cloudinary.config( process.env.CLOUDINARY_URL);
-const cloudinaryFolder =  process.env.CLOUDINARY_FOLDER
 
 
-const { uploadsFiles, isValidFileFormat } = require("../helpers");
+
+const { uploadsFiles, isValidFileFormat, validateImages, uploadImagesCloudinary } = require("../helpers");
 const { User, Product } = require("../models");
 
 const uploadFiles = async (req = request, res = response) => {
@@ -70,60 +68,55 @@ const updateImage = async (req = request, res = response) => {
 
 }
 
-const updateImageCloudinary = async (req = request, res = response) => {
-    const { isValid, message } = isValidFileFormat(req.files.file);
-    if ( !isValid ) {
-        return res.status(400).json({
-            message 
-        });
-    }
-   
+
+const updateCloudImages = async (req = request, res = response) => {
     const { id, collection } = req.params;
+    const { file } = req.files;
     let model;
 
-    switch (collection) {
-        case 'users':
-            model = await User.findById(id);
-            if (!model) {
-                return res.status(400).json({
-                    message: `No existe un usuario con el id ${id}`
+    const images = (Array.isArray(file)) ? file : [file];
+
+    try {
+        switch (collection) {
+            case 'users':
+                await validateImages(images, collection, false);
+                model = await User.findById(id);
+                if (!model) {
+                    return res.status(400).json({
+                        message: `No existe un usuario con el id ${id}`
+                    });
+                }
+                model = await uploadImagesCloudinary(images, model, collection, false);
+                break;
+
+            case 'products':
+                await validateImages(images, collection, true);
+                model = await Product.findById(id);
+                if (!model) {
+                    return res.status(400).json({
+                        message: `No existe un producto con el id ${id}`
+                    });
+                }
+                model = await uploadImagesCloudinary(images, model, collection, true);
+                break;
+
+            default:
+                return res.status(500).json({
+                    message: `Olvidé hacer ${collection} uploads`
                 });
-            }
-            break;
+        }
 
-        case 'products':
-            model = await Product.findById(id);
-            if (!model) {
-                return res.status(400).json({
-                    message: `No existe un producto con el id ${id}`
-                });
-            }
-            break;
+        await model.save();
+        return res.json(model);
 
-        default:
-            return res.status(500).json({
-                message: `Olvidé hacer ${key} uploads`
-            });
+    } catch (error) {
+        return res.status(400).json({
+            error: error.message
+        });
     }
-
-
-    //  Delete previous images
-    if (model.img) {
-        const name = model.img.split('/').pop();
-        const [public_id] = name.split('.');
-        cloudinary.uploader.destroy(`${cloudinaryFolder}/${collection}/${public_id}`);
-    }
-
-    const { tempFilePath } = req.files.file;
-    const { secure_url } = await cloudinary.uploader.upload(tempFilePath, {folder:`${cloudinaryFolder}/${collection}`});
-    model.img = secure_url;
-    await model.save();
-
-    res.json(model);
-
 }
 
-const getImage = async(req = request, res = response) => {
+const getImage = async (req = request, res = response) => {
     const { id, collection } = req.params;
     let model;
 
@@ -155,13 +148,13 @@ const getImage = async(req = request, res = response) => {
     if (model.img) {
         const pathImg = path.join(__dirname, '../uploads', collection, model.img);
         if (fs.existsSync(pathImg)) {
-            return res.sendFile( pathImg );
+            return res.sendFile(pathImg);
         }
     }
 
     const pathImg = path.join(__dirname, '../assets/no-image.png');
     if (fs.existsSync(pathImg)) {
-        return res.sendFile( pathImg );
+        return res.sendFile(pathImg);
     }
 
     res.status(500).json({
@@ -173,6 +166,6 @@ const getImage = async(req = request, res = response) => {
 module.exports = {
     uploadFiles,
     updateImage,
-    updateImageCloudinary,
+    updateCloudImages,
     getImage,
 }

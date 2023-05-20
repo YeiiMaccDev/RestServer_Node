@@ -133,7 +133,7 @@ const search = async (req = request, res = response) => {
             break;
         default:
             res.status(500).json({
-                message: `Olvidé hacer esta búsqueda ${key}`
+                message: `Olvidé hacer esta búsqueda ${collection}`
             });
             break;
     }
