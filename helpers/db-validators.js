@@ -51,9 +51,9 @@ const existsProductById = async (id = '') => {
  * Validate authorized collections.
  */
 
-const collectionsAuthorized = (collection = '', collections= []) => {
-    const isIncluded  = collections.includes(collection);
-    if ( !isIncluded ) {
+const iscollectionsAuthorized = (collection = '', collections = []) => {
+    const isIncluded = collections.includes(collection);
+    if (!isIncluded) {
         throw new Error(`Colección (${collection}) no está autorizada, Autorizadas: ${collections}`);
     }
     return true;
@@ -66,5 +66,5 @@ module.exports = {
     existsCategoryById,
     existsProductById,
     existsUserById,
-    collectionsAuthorized
+    iscollectionsAuthorized
 }

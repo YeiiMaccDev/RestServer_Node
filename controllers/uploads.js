@@ -5,7 +5,11 @@ const { request, response } = require("express");
 
 
 
-const { uploadsFiles, isValidFileFormat, validateImages, uploadImagesCloudinary } = require("../helpers");
+const { uploadsFiles,
+    isValidFileFormat,
+    validateImages,
+    uploadImagesCloudinary
+} = require("../helpers");
 const { User, Product } = require("../models");
 
 const uploadFiles = async (req = request, res = response) => {
@@ -48,7 +52,7 @@ const updateImage = async (req = request, res = response) => {
 
         default:
             return res.status(500).json({
-                message: `Olvidé hacer ${key} uploads`
+                message: `Olvidé hacer ${collection} uploads`
             });
     }
 
@@ -141,7 +145,7 @@ const getImage = async (req = request, res = response) => {
 
         default:
             return res.status(500).json({
-                message: `Olvidé hacer ${key} uploads`
+                message: `Olvidé hacer ${collection} uploads`
             });
     }
 

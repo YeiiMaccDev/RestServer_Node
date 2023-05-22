@@ -12,7 +12,8 @@ const { getUsers,
 const { validateFields,
     validateJWT,
     isAdminRole,
-    isRole
+    isRole,
+    isSameUserOrAdminRole
 } = require('../middlewares');
 
 const { isValidRole,
@@ -28,9 +29,14 @@ const router = Router();
  * {{url}}/api/users
  */
 
-router.get('/', getUsers);
+router.get('/', [
+    validateJWT,
+    isAdminRole,
+], getUsers);
 
 router.get('/:id', [
+    validateJWT,
+    isSameUserOrAdminRole,
     check('id', 'No es un ID válido.').isMongoId(),
     validateFields,
     check('id').custom(existsUserById),
@@ -50,6 +56,8 @@ router.post('/', [
 ], postUsers);
 
 router.put('/:id', [
+    validateJWT,
+    isSameUserOrAdminRole,
     check('id', 'No es un ID válido').isMongoId(),
     validateFields,
     check('id').custom(existsUserById),
@@ -61,8 +69,8 @@ router.patch('/:id', patchUsers);
 
 router.delete('/:id', [
     validateJWT,
-    // isAdminRole,
-    isRole('ADMIN_ROLE', 'SALES_ROLE'),
+    isAdminRole,
+    // isRole('ADMIN_ROLE', 'SALES_ROLE'),
     check('id', 'No es un ID válido').isMongoId(),
     validateFields,
     check('id').custom(existsUserById),
