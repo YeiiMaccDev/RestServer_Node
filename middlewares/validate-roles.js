@@ -52,14 +52,15 @@ const isSameUserOrValidRoleToUpdateImages = (req = request, res = response, next
         return res.status(500).json({ message });
     }
 
-    const { role, name, _id } = req.authenticatedUser;
+    const { role, name, _uid, _id, uid } = req.authenticatedUser;
     if (role === 'ADMIN_ROLE') {
         return next();
     }
 
+
     switch (collection) {
         case 'users':
-            if (_id !== id) {
+            if (_id.toString() !== id) {
                 return res.status(401).json({
                     message: `${name} no puede modificar otro usuario. No puede realizar esta acción.`
                 });
@@ -98,7 +99,7 @@ const isSameUserOrAdminRole = (req = request, res = response, next) => {
         return next();
     }
 
-    if (_id !== id) {
+    if (_id.toString() !== id) {
         return res.status(401).json({
             message: `${name} no pueden acceder a datos de otro usuario. No puede realizar esta acción.`
         });
